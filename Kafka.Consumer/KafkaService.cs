@@ -1,0 +1,39 @@
+﻿using Confluent.Kafka;
+
+namespace Kafka.Consumer;
+
+internal class KafkaService
+{
+    public async Task ConsumeMessageWithNullKeyAsync(string topicName)
+    {
+        var config = new ConsumerConfig()
+        {
+            BootstrapServers = "localhost:9094",
+            GroupId = "use-case-1-group-1",
+            AutoOffsetReset = AutoOffsetReset.Earliest // consume all messages 
+        };
+
+        var consumer = new ConsumerBuilder<Null, string>(config).Build();
+        consumer.Subscribe(topicName); // kafka-pull, rabbitmq push
+
+        while (true)
+        {
+            /*
+             * Blocks until a message is available. Internally polls the broker, buffers
+             * fetched records in a local queue, and returns the next message from that
+             * queue as a ConsumeResult<TKey, TValue>.
+             *
+             * If a timeout is specified, waits until a message arrives or the timeout
+             * elapses.
+             *
+             * Best practice: match the number of consumer instances to the number of
+             * partitions. Any consumer beyond the partition count will stay idle because
+             * a partition can be assigned to only one consumer in the same group.
+             */
+            var consumeResult = consumer.Consume(5000);
+            if (consumeResult != null)
+                Console.WriteLine($"consumed message: {consumeResult.Message.Value}");
+            await Task.Delay(500);
+        }
+    }
+}
