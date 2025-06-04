@@ -2,4 +2,8 @@
 
 Console.WriteLine("Producer");
 
-await KafkaService.CreateTopicAsync();
+var kafkaService = new KafkaService();
+
+var topicName = "use-case-1-topic";
+await kafkaService.CreateTopicAsync(topicName, partitionsCount: 5);
+await kafkaService.SendMessageWithNullKeyAsync(topicName);
