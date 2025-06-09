@@ -43,4 +43,28 @@ public class KafkaService
             await Task.Delay(150);
         }
     }
+
+
+    /// <summary>
+    /// By setting the Key property, Kafka’s default partitioner hashes that key, so every message with the same key is routed to (and kept in order within) the same partition. Different keys can still spread across partitions.
+    /// </summary>
+    public async Task SendMessageWithIntKeyAsync(string topicName)
+    {
+        var config = new ProducerConfig() { BootstrapServers = "localhost:9094" };
+
+        using var producer = new ProducerBuilder<int, string>(config).Build();
+
+        foreach (var item in Enumerable.Range(1, 100))
+        {
+            var message = new Message<int, string>() { Value = $"Message(use-case-1) {item}" , Key = item};  // same key ⇒ same partition
+            var result = await producer.ProduceAsync(topicName, message);
+
+            foreach (var property in result.GetType().GetProperties())
+            {
+                Console.WriteLine($"{property.Name} : {property.GetValue(result)}");
+            }
+
+            Console.WriteLine("----------------------------------------");
+        }
+    }
 }
