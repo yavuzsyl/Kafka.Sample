@@ -5,6 +5,12 @@ Console.WriteLine("Consumer");
 
 var kafkaService = new KafkaService();
 //var topicName = "use-case-1-topic";
-var topicName = "use-case-2-topic";
-await kafkaService.ConsumeMessageWithIntKeyAsync(topicName);
+//await kafkaService.ConsumeMessageWithNullKeyAsync(topicName);
+
+//var topicName = "use-case-2-topic";
+//await kafkaService.ConsumeMessageWithIntKeyAsync(topicName);
+
+var topicName = "use-case-3-topic";
+await kafkaService.ConsumeComplexMessageWithIntKeyAsync(topicName);
+
 Console.ReadLine();

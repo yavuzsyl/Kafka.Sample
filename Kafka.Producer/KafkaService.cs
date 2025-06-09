@@ -1,5 +1,6 @@
 ﻿using Confluent.Kafka.Admin;
 using Confluent.Kafka;
+using Kafka.Producer.Events;
 
 namespace Kafka.Producer;
 
@@ -56,7 +57,30 @@ public class KafkaService
 
         foreach (var item in Enumerable.Range(1, 100))
         {
-            var message = new Message<int, string>() { Value = $"Message(use-case-1) {item}" , Key = item};  // same key ⇒ same partition
+            var message = new Message<int, string>() { Value = $"Message(use-case-1) {item}", Key = item };  // same key ⇒ same partition
+            var result = await producer.ProduceAsync(topicName, message);
+
+            foreach (var property in result.GetType().GetProperties())
+            {
+                Console.WriteLine($"{property.Name} : {property.GetValue(result)}");
+            }
+
+            Console.WriteLine("----------------------------------------");
+        }
+    }
+
+    public async Task SendComplexTypeMessageWithIntKeyAsync(string topicName)
+    {
+        var config = new ProducerConfig() { BootstrapServers = "localhost:9094" };
+
+        using var producer = new ProducerBuilder<int, OrderCreatedEvent>(config)
+            .SetValueSerializer(new CustomValueSerializer<OrderCreatedEvent>())
+            .Build();
+
+        foreach (var item in Enumerable.Range(1, 100))
+        {
+            var orderCreatedEvent = new OrderCreatedEvent { OrderCode = Guid.NewGuid().ToString(), TotalPrice = item * 100, UserId = item };
+            var message = new Message<int, OrderCreatedEvent>() { Value = orderCreatedEvent, Key = item };  // same key ⇒ same partition
             var result = await producer.ProduceAsync(topicName, message);
 
             foreach (var property in result.GetType().GetProperties())
