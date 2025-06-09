@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kafka.Producer", "Kafka.Pro
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{341DC8B7-4964-43D3-AB0D-4016C72837CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kafka.Consumer(MultipleConsumerTest)", "..\Kafka.Consumer(MultipleConsumerTest)\Kafka.Consumer(MultipleConsumerTest).csproj", "{D1B84B41-FB5D-42D1-9A00-A8723ADAC827}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kafka.ConsumerMultipleGroupTest", "Kafka.ConsumerMultipleGroupTest\Kafka.ConsumerMultipleGroupTest.csproj", "{12E045CB-E486-4A1D-BA8D-F9D3FBB40B0C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{341DC8B7-4964-43D3-AB0D-4016C72837CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{341DC8B7-4964-43D3-AB0D-4016C72837CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{341DC8B7-4964-43D3-AB0D-4016C72837CD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D1B84B41-FB5D-42D1-9A00-A8723ADAC827}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D1B84B41-FB5D-42D1-9A00-A8723ADAC827}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D1B84B41-FB5D-42D1-9A00-A8723ADAC827}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D1B84B41-FB5D-42D1-9A00-A8723ADAC827}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12E045CB-E486-4A1D-BA8D-F9D3FBB40B0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12E045CB-E486-4A1D-BA8D-F9D3FBB40B0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12E045CB-E486-4A1D-BA8D-F9D3FBB40B0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12E045CB-E486-4A1D-BA8D-F9D3FBB40B0C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
