@@ -10,7 +10,8 @@ internal class KafkaService
         {
             BootstrapServers = "localhost:9094",
             GroupId = "use-case-1-group-1",
-            AutoOffsetReset = AutoOffsetReset.Earliest // consume all messages 
+            AutoOffsetReset = AutoOffsetReset.Earliest // if no committed offset is found, begin at **offset 0** and replay the entire topic history.
+                                                       // AutoOffsetReset.Latest  – if no committed offset is found, jump to the **end of the log** and receive **only messages published after** the consumer starts. 
         };
 
         var consumer = new ConsumerBuilder<Null, string>(config).Build();

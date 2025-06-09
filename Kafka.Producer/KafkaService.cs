@@ -29,7 +29,7 @@ public class KafkaService
 
         using var producer = new ProducerBuilder<Null, string>(config).Build(); // primitive types will be serialized by the library
 
-        foreach (var item in Enumerable.Range(1, 60))
+        foreach (var item in Enumerable.Range(1, 30))
         {
             var message = new Message<Null, string>() { Value = $"Message(use-case-1) {item}" };
             var result = await producer.ProduceAsync(topicName, message);
