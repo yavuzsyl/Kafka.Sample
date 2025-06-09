@@ -1,0 +1,34 @@
+ Topic: messages  (P0 | P1 | P2)
+
+| Consumer Group | Active Consumers | Partition Assignment        | What they read                                      |
+| -------------- | ---------------- | --------------------------- | --------------------------------------------------- |
+| **Group 1**    | C1-A, C1-B       | C1-A → P0, C1-B → P1 & P2   | Each message **once inside the group**              |
+| **Group 2**    | C2-A (single)    | C2-A → P0 + P1 + P2         | The **same messages again**, independent of Group 1 |
+
+   Group 1                           Group 2
+┌────────────┐                   ┌────────────┐
+│ C1-A  (P0) │                   │ C2-A (P0)  │
+│ C1-B  (P1) │                   │ C2-A (P1)  │
+│ C1-B  (P2) │                   │ C2-A (P2)  │
+└────────────┘                   └────────────┘
+
+Different groups read the same data set; within a group, each partition is processed by exactly one consumer.
+
+Group isolation
+Different consumer groups act like separate subscribers. Group 1 and Group 2 can both read the messages topic without affecting each other.
+
+One partition ⇒ one consumer (per group)
+Within a group, a partition is owned by only one active consumer.
+
+Group 1 has fewer consumers than partitions, so C1-B handles two partitions.
+
+If we add more consumers than partitions, the extras will stay idle.
+
+Ordering is per partition
+Kafka guarantees the order of messages inside each partition, not across partitions.
+
+Scaling guideline
+For balanced load, try to keep #consumers ≈ #partitions in each group. To push more throughput, add partitions first, then consumers.
+
+Automatic rebalancing
+If a consumer in a group stops, Kafka reassigns its partitions to the remaining consumers so no data is lost or skipped.
