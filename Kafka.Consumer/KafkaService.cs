@@ -120,4 +120,29 @@ internal class KafkaService
             }
         }
     }
+
+    public async Task ConsumeComplexMessageWithComplexKeyAsync(string topicName)
+    {
+        var config = new ConsumerConfig()
+        {
+            BootstrapServers = "localhost:9094",
+            GroupId = "use-case-3-group-1",
+            AutoOffsetReset = AutoOffsetReset.Earliest
+        };
+
+        var consumer = new ConsumerBuilder<MessageKey, OrderCreatedEvent>(config)
+            .SetValueDeserializer(new CustomValueDeserializer<OrderCreatedEvent>())
+            .SetKeyDeserializer(new CustomValueDeserializer<MessageKey>())
+            .Build();
+        consumer.Subscribe(topicName);
+
+        while (true)
+        {
+            var consumeResult = consumer.Consume(5000);
+            if (consumeResult != null)
+                Console.WriteLine($"consumed message: Key: {consumeResult.Message.Key.KeyValue} - Value: UserId:{consumeResult.Message.Value.UserId}-OrderCode:{consumeResult.Message.Value.OrderCode}-TotalPrice:{consumeResult.Message.Value.TotalPrice}");
+
+            await Task.Delay(5);
+        }
+    }
 }

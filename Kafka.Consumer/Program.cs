@@ -13,7 +13,10 @@ var kafkaService = new KafkaService();
 //var topicName = "use-case-3-topic";
 //await kafkaService.ConsumeComplexMessageWithIntKeyAsync(topicName);
 
-var topicName = "use-case-3-topic-w-h";
-await kafkaService.ConsumeComplexMessageWithIntKeyAndHeaderAsync(topicName);
+//var topicName = "use-case-3-topic-w-h";
+//await kafkaService.ConsumeComplexMessageWithIntKeyAndHeaderAsync(topicName);
+
+var topicName = "use-case-3-topic-w-cmpx-key";
+await kafkaService.ConsumeComplexMessageWithComplexKeyAsync(topicName);
 
 Console.ReadLine();

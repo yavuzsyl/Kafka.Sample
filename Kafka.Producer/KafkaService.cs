@@ -128,4 +128,39 @@ public class KafkaService
             Console.WriteLine("----------------------------------------");
         }
     }
+
+    public async Task SendComplexTypeMessageWithComplexKeyAsync(string topicName)
+    {
+        var config = new ProducerConfig() { BootstrapServers = "localhost:9094" };
+
+        using var producer = new ProducerBuilder<MessageKey, OrderCreatedEvent>(config)
+            .SetValueSerializer(new CustomValueSerializer<OrderCreatedEvent>())
+            .SetKeySerializer(new CustomValueSerializer<MessageKey>())
+            .Build();
+
+        foreach (var item in Enumerable.Range(1, 3))
+        {
+            var orderCreatedEvent = new OrderCreatedEvent { OrderCode = Guid.NewGuid().ToString(), TotalPrice = item * 100, UserId = item };
+
+            var header = new Headers
+            {
+                { "correlation_id", Encoding.UTF8.GetBytes(Guid.NewGuid().ToString()) },
+                { "version", Encoding.UTF8.GetBytes("v1") }
+            };
+
+            var message = new Message<MessageKey, OrderCreatedEvent>()
+            {
+                Value = orderCreatedEvent,
+                Key = new MessageKey(Guid.NewGuid().ToString()),
+            };
+            var result = await producer.ProduceAsync(topicName, message);
+
+            foreach (var property in result.GetType().GetProperties())
+            {
+                Console.WriteLine($"{property.Name} : {property.GetValue(result)}");
+            }
+
+            Console.WriteLine("----------------------------------------");
+        }
+    }
 }
