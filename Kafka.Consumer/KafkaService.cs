@@ -1,5 +1,6 @@
 ﻿using Confluent.Kafka;
 using Kafka.Consumer.Events;
+using System.Text;
 
 namespace Kafka.Consumer;
 
@@ -82,6 +83,41 @@ internal class KafkaService
                 Console.WriteLine($"consumed message: Key: {consumeResult.Message.Key} - Value: UserId:{consumeResult.Message.Value.UserId}-OrderCode:{consumeResult.Message.Value.OrderCode}-TotalPrice:{consumeResult.Message.Value.TotalPrice}");
 
             await Task.Delay(5);
+        }
+    }
+
+    public async Task ConsumeComplexMessageWithIntKeyAndHeaderAsync(string topicName)
+    {
+        var config = new ConsumerConfig()
+        {
+            BootstrapServers = "localhost:9094",
+            GroupId = "use-case-3-group-1",
+            AutoOffsetReset = AutoOffsetReset.Earliest
+        };
+
+        var consumer = new ConsumerBuilder<int, OrderCreatedEvent>(config)
+            .SetValueDeserializer(new CustomValueDeserializer<OrderCreatedEvent>())
+            .Build();
+        consumer.Subscribe(topicName);
+
+        while (true)
+        {
+            var consumeResult = consumer.Consume(5000);
+            if (consumeResult != null)
+            {
+                var correlationId = Encoding.UTF8.GetString(consumeResult.Message.Headers.GetLastBytes("correlation_id"));
+                var version = Encoding.UTF8.GetString(consumeResult.Message.Headers.GetLastBytes("version"));
+
+                if (consumeResult != null)
+                    Console.WriteLine(
+                        $"consumed message: Key: {consumeResult.Message.Key} " +
+                        $"- Value: UserId:{consumeResult.Message.Value.UserId}" +
+                        $"- OrderCode:{consumeResult.Message.Value.OrderCode}" +
+                        $"- TotalPrice:{consumeResult.Message.Value.TotalPrice}" +
+                        $"- Header-Correlation-id: {correlationId}" +
+                        $"- version: {version}");
+                await Task.Delay(5);
+            }
         }
     }
 }
