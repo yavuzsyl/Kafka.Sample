@@ -16,7 +16,10 @@ var kafkaService = new KafkaService();
 //var topicName = "use-case-3-topic-w-h";
 //await kafkaService.ConsumeComplexMessageWithIntKeyAndHeaderAsync(topicName);
 
-var topicName = "use-case-3-topic-w-cmpx-key";
-await kafkaService.ConsumeComplexMessageWithComplexKeyAsync(topicName);
+//var topicName = "use-case-3-topic-w-cmpx-key";
+//await kafkaService.ConsumeComplexMessageWithComplexKeyAsync(topicName);
+
+var topicName = "use-case-4-topic-specific-partition";
+await kafkaService.ConsumeFromSpecificPartitionAsync(topicName, 2);
 
 Console.ReadLine();
