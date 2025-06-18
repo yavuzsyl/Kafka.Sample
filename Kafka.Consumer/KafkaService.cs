@@ -140,7 +140,10 @@ internal class KafkaService
         {
             var consumeResult = consumer.Consume(5000);
             if (consumeResult != null)
+            {
+                Console.WriteLine($"Message timestamp :{consumeResult.Message.Timestamp.UtcDateTime}");
                 Console.WriteLine($"consumed message: Key: {consumeResult.Message.Key.KeyValue} - Value: UserId:{consumeResult.Message.Value.UserId}-OrderCode:{consumeResult.Message.Value.OrderCode}-TotalPrice:{consumeResult.Message.Value.TotalPrice}");
+            }
 
             await Task.Delay(5);
         }

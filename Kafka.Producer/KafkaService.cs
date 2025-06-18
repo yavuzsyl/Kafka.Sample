@@ -14,9 +14,19 @@ public class KafkaService
 
         try
         {
+            var config = new Dictionary<string, string>() {
+                //https://docs.confluent.io/platform/current/installation/configuration/topic-configs.html
+                { "message.timestamp.type", "LogAppendTime" }
+            };
+
             await adminClient.CreateTopicsAsync(
             [
-                new TopicSpecification(){ Name = topicName, NumPartitions = partitionsCount, ReplicationFactor = 1 }
+                new TopicSpecification(){ 
+                    Name = topicName, 
+                    NumPartitions = partitionsCount,
+                    ReplicationFactor = 1,
+                    Configs = config
+                }
             ]);
         }
         catch (Exception ex)
@@ -152,6 +162,7 @@ public class KafkaService
             {
                 Value = orderCreatedEvent,
                 Key = new MessageKey(Guid.NewGuid().ToString()),
+                Headers = header
             };
             var result = await producer.ProduceAsync(topicName, message);
 
