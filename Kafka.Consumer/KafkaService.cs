@@ -154,7 +154,7 @@ internal class KafkaService
         var config = new ConsumerConfig()
         {
             BootstrapServers = "localhost:9094",
-            GroupId = "use-case-3-group-1",
+            GroupId = "use-case-4-group-1",
             AutoOffsetReset = AutoOffsetReset.Earliest
         };
 
@@ -164,6 +164,35 @@ internal class KafkaService
             .Build();
 
         consumer.Assign(new TopicPartition(topicName, partition));
+
+        while (true)
+        {
+            var consumeResult = consumer.Consume(5000);
+            if (consumeResult != null)
+            {
+                Console.WriteLine($"Message timestamp :{consumeResult.Message.Timestamp.UtcDateTime}");
+                Console.WriteLine($"consumed message: Key: {consumeResult.Message.Key.KeyValue} - Value: UserId:{consumeResult.Message.Value.UserId}-OrderCode:{consumeResult.Message.Value.OrderCode}-TotalPrice:{consumeResult.Message.Value.TotalPrice}");
+            }
+
+            await Task.Delay(5);
+        }
+    }
+
+    public async Task ConsumeFromSpecificPartitionOffsetAsync(string topicName, int partition, int consumeAfterOffset)
+    {
+        var config = new ConsumerConfig()
+        {
+            BootstrapServers = "localhost:9094",
+            GroupId = "use-case-5-group-1",
+            AutoOffsetReset = AutoOffsetReset.Earliest
+        };
+
+        var consumer = new ConsumerBuilder<MessageKey, OrderCreatedEvent>(config)
+            .SetValueDeserializer(new CustomValueDeserializer<OrderCreatedEvent>())
+            .SetKeyDeserializer(new CustomValueDeserializer<MessageKey>())
+            .Build();
+
+        consumer.Assign(new TopicPartitionOffset(topicName, partition, consumeAfterOffset));
 
         while (true)
         {

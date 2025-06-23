@@ -19,6 +19,9 @@ var kafkaService = new KafkaService();
 //var topicName = "use-case-3-topic-w-cmpx-key";
 //await kafkaService.SendComplexTypeMessageWithComplexKeyAsync(topicName);
 
-var topicName = "use-case-4-topic-specific-partition";
-await kafkaService.CreateTopicAsync(topicName, partitionsCount: 6);
-await kafkaService.SendMessageToSpecificPartitionAsync(topicName, 2);
+//var topicName = "use-case-4-topic-specific-partition";
+//await kafkaService.SendMessageToSpecificPartitionAsync(topicName, 2);
+
+var topicName = "use-case-5-topic-specific-partition-offset";
+await kafkaService.CreateTopicAsync(topicName, partitionsCount: 5);
+await kafkaService.SendMessageToSpecificPartitionAsync(topicName, 3);
