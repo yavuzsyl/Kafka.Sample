@@ -22,7 +22,12 @@ var kafkaService = new KafkaService();
 //var topicName = "use-case-4-topic-specific-partition";
 //await kafkaService.ConsumeFromSpecificPartitionAsync(topicName, 2);
 
-var topicName = "use-case-5-topic-specific-partition-offset";
-await kafkaService.ConsumeFromSpecificPartitionOffsetAsync(topicName, 3,27);
+//var topicName = "use-case-5-topic-specific-partition-offset";
+//await kafkaService.ConsumeFromSpecificPartitionOffsetAsync(topicName, 3,27);
+
+
+var topicName = "message-with-ack";
+await kafkaService.ConsumeMessageWithAckAsync(topicName);
+
 
 Console.ReadLine();

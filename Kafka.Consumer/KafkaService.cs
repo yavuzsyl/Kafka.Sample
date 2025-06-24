@@ -206,4 +206,55 @@ internal class KafkaService
             await Task.Delay(5);
         }
     }
+
+    // ─────────────── Consumer “acknowledgement” in Kafka ───────────────
+    //
+    // In Kafka, an ACK = committing the **offset**.  
+    // • EnableAutoCommit = true   → the client periodically commits offsets in the
+    //   background right after the record is fetched (fire-and-forget style).  
+    //   Fast, but you may mark a message “done” before your code has actually
+    //   processed it.
+    //
+    // • EnableAutoCommit = false  → you call Commit() explicitly **after** your
+    //   business logic succeeds.  Safer (at-least-once), but you must handle commits
+    //   and retries yourself.
+    //
+    public async Task ConsumeMessageWithAckAsync(string topicName)
+    {
+        var config = new ConsumerConfig()
+        {
+            BootstrapServers = "localhost:9094",
+            GroupId = "group-6",
+            AutoOffsetReset = AutoOffsetReset.Earliest,
+            EnableAutoCommit = false,   // ← manual ACK mode
+            // EnableAutoCommit = true    // ← uncomment for auto-commit mode
+        };
+
+        var consumer = new ConsumerBuilder<Null, string>(config).Build();
+        consumer.Subscribe(topicName);
+
+        while (true)
+        {
+            var consumeResult = consumer.Consume(5000);
+            if (consumeResult != null)
+            {
+                try
+                {
+                    Console.WriteLine($"consumed message: {consumeResult.Message.Value}");
+
+                    // Manual ACK: mark this offset as processed so the
+                    // group will resume from the next record on restart
+                    consumer.Commit(consumeResult);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    // Optionally seek back or let the lack of commit trigger a retry
+                    throw;
+                }
+            }
+
+            await Task.Delay(500);
+        }
+    }
 }

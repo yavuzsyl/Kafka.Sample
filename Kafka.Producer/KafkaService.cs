@@ -222,7 +222,7 @@ public class KafkaService
 
         foreach (var item in Enumerable.Range(1, 10))
         {
-            var message = new Message<Null, string>() { Value = $"Message(use-case-1) {item}" };
+            var message = new Message<Null, string>() { Value = $"Message(with ack) {item}" };
             var result = await producer.ProduceAsync(topicName, message);
 
             foreach (var property in result.GetType().GetProperties())
