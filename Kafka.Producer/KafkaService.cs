@@ -213,4 +213,25 @@ public class KafkaService
             Console.WriteLine("----------------------------------------");
         }
     }
+
+    public async Task SendMessageWithAckAsync(string topicName)
+    {
+        var config = new ProducerConfig() { BootstrapServers = "localhost:9094", Acks = Acks.Leader };
+
+        using var producer = new ProducerBuilder<Null, string>(config).Build();
+
+        foreach (var item in Enumerable.Range(1, 10))
+        {
+            var message = new Message<Null, string>() { Value = $"Message(use-case-1) {item}" };
+            var result = await producer.ProduceAsync(topicName, message);
+
+            foreach (var property in result.GetType().GetProperties())
+            {
+                Console.WriteLine($"{property.Name} : {property.GetValue(result)}");
+            }
+
+            Console.WriteLine("----------------------------------------");
+            await Task.Delay(150);
+        }
+    }
 }
