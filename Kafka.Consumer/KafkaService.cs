@@ -257,4 +257,37 @@ internal class KafkaService
             await Task.Delay(500);
         }
     }
+
+    public async Task ConsumeMessageFromClusterAsync(string topicName)
+    {
+        var config = new ConsumerConfig()
+        {
+            BootstrapServers = "localhost:7000,localhost:7001,localhost:7002",
+            GroupId = "group-cluster",
+            AutoOffsetReset = AutoOffsetReset.Earliest,
+            EnableAutoCommit = false,
+        };
+
+        var consumer = new ConsumerBuilder<Null, string>(config).Build();
+        consumer.Subscribe(topicName);
+
+        while (true)
+        {
+            var consumeResult = consumer.Consume(5000);
+            if (consumeResult != null)
+            {
+                try
+                {
+                    Console.WriteLine($"consumed message: {consumeResult.Message.Value}");
+                    consumer.Commit(consumeResult);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
+            }
+            await Task.Delay(500);
+        }
+    }
 }

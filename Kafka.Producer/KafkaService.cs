@@ -21,8 +21,8 @@ public class KafkaService
 
             await adminClient.CreateTopicsAsync(
             [
-                new TopicSpecification(){ 
-                    Name = topicName, 
+                new TopicSpecification(){
+                    Name = topicName,
                     NumPartitions = partitionsCount,
                     ReplicationFactor = 1,
                     Configs = config
@@ -63,6 +63,30 @@ public class KafkaService
             Console.WriteLine(ex.Message);
         }
     }
+
+    public async Task CreateTopicWithClusterAsync(string topicName, int partitionsCount = 9)
+    {
+        using var adminClient = new AdminClientBuilder(new AdminClientConfig()
+        { BootstrapServers = "localhost:7000,localhost:7001,localhost:7002" }).Build();
+
+        try
+        {
+            await adminClient.CreateTopicsAsync(
+            [
+                new TopicSpecification(){
+                    Name = topicName,
+                    NumPartitions = partitionsCount,
+                    ReplicationFactor = 3, // not bigger than partitionsCount
+                }
+            ]);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+
 
     public async Task SendMessageWithNullKeyAsync(string topicName)
     {
@@ -252,6 +276,28 @@ public class KafkaService
         foreach (var item in Enumerable.Range(1, 10))
         {
             var message = new Message<Null, string>() { Value = $"Message(with ack) {item}" };
+            var result = await producer.ProduceAsync(topicName, message);
+
+            foreach (var property in result.GetType().GetProperties())
+            {
+                Console.WriteLine($"{property.Name} : {property.GetValue(result)}");
+            }
+
+            Console.WriteLine("----------------------------------------");
+            await Task.Delay(150);
+        }
+    }
+
+
+    public async Task SendMessageToClusterTopicAsync(string topicName)
+    {
+        var config = new ProducerConfig() { BootstrapServers = "localhost:7000,localhost:7001,localhost:7002", Acks = Acks.All };
+
+        using var producer = new ProducerBuilder<Null, string>(config).Build();
+
+        foreach (var item in Enumerable.Range(1, 10))
+        {
+            var message = new Message<Null, string>() { Value = $"Message(from multiple brokers) {item}" };
             var result = await producer.ProduceAsync(topicName, message);
 
             foreach (var property in result.GetType().GetProperties())

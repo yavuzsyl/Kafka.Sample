@@ -26,8 +26,11 @@ var kafkaService = new KafkaService();
 //await kafkaService.ConsumeFromSpecificPartitionOffsetAsync(topicName, 3,27);
 
 
-var topicName = "message-with-ack";
-await kafkaService.ConsumeMessageWithAckAsync(topicName);
+//var topicName = "message-with-ack";
+//await kafkaService.ConsumeMessageWithAckAsync(topicName);
 
+
+var topicName = "cluster-topic-2";
+await kafkaService.ConsumeMessageFromClusterAsync(topicName);
 
 Console.ReadLine();
