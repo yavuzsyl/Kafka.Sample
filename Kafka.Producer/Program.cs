@@ -38,6 +38,9 @@ var kafkaService = new KafkaService();
 //                          acknowledgement.  Lowest latency, but **no delivery
 //                          guarantee** (lost records are possible).
 
-var topicName = "message-with-ack";
-await kafkaService.CreateTopicAsync(topicName, partitionsCount: 5);
-await kafkaService.SendMessageWithAckAsync(topicName);
+//var topicName = "message-with-ack";
+//await kafkaService.CreateTopicAsync(topicName, partitionsCount: 5);
+//await kafkaService.SendMessageWithAckAsync(topicName);
+
+var topicName = "retention-topic-2";
+await kafkaService.CreateTopicWithRetentionAsync(topicName, partitionsCount: 2);

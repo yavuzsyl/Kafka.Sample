@@ -35,6 +35,35 @@ public class KafkaService
         }
     }
 
+    public async Task CreateTopicWithRetentionAsync(string topicName, int partitionsCount)
+    {
+        using var adminClient = new AdminClientBuilder(new AdminClientConfig()
+        { BootstrapServers = "localhost:9094" }).Build();
+
+        try
+        {
+            TimeSpan oneMonth = TimeSpan.FromDays(30);
+            var config = new Dictionary<string, string>() {
+                //{ "retention.ms", "-1" } // forever
+                {"retention.ms", oneMonth.TotalMilliseconds.ToString() }, // 30 days
+            };
+
+            await adminClient.CreateTopicsAsync(
+            [
+                new TopicSpecification(){
+                    Name = topicName,
+                    NumPartitions = partitionsCount,
+                    ReplicationFactor = 1,
+                    Configs = config
+                }
+            ]);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
     public async Task SendMessageWithNullKeyAsync(string topicName)
     {
         var config = new ProducerConfig() { BootstrapServers = "localhost:9094" }; //broker
