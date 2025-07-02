@@ -1,6 +1,7 @@
-﻿using Confluent.Kafka.Admin;
-using Confluent.Kafka;
+﻿using Confluent.Kafka;
+using Confluent.Kafka.Admin;
 using Kafka.Producer.Events;
+using System.Diagnostics;
 using System.Text;
 
 namespace Kafka.Producer;
@@ -86,6 +87,34 @@ public class KafkaService
         }
     }
 
+
+    public async Task CreateTopicWithRetryAndClusterAsync(string topicName, int partitionsCount = 9)
+    {
+        using var adminClient = new AdminClientBuilder(new AdminClientConfig()
+        { BootstrapServers = "localhost:7000,localhost:7001,localhost:7002" }).Build();
+
+        try
+        {
+            var configs = new Dictionary<string, string>
+            {
+                {"min.insync.replicas","3"} // if ack set as all, min 3 replicas should receive the message
+            };
+
+            await adminClient.CreateTopicsAsync(
+            [
+                new TopicSpecification(){
+                    Name = topicName,
+                    NumPartitions = partitionsCount,
+                    ReplicationFactor = 3,
+                    Configs = configs
+                }
+            ]);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
 
 
     public async Task SendMessageWithNullKeyAsync(string topicName)
@@ -308,5 +337,51 @@ public class KafkaService
             Console.WriteLine("----------------------------------------");
             await Task.Delay(150);
         }
+    }
+
+    public async Task SendMessageWithRetryToClusterTopicAsync(string topicName)
+    {
+        var config = new ProducerConfig()
+        {
+            BootstrapServers = "localhost:7000,localhost:7001,localhost:7002",
+            Acks = Acks.All,
+            //MessageTimeoutMs = 7000,
+            MessageSendMaxRetries = 5,
+            RetryBackoffMs = 1000,
+            RetryBackoffMaxMs = 2000,
+        };
+        //Acks.All 
+        //Acks.Leader
+        //Acks.None
+        // MessageSendMaxRetries 
+        // MessageTimeoutMs - try untill times up
+
+        _ = Task.Run(async () =>
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            while (true)
+            {
+                TimeSpan timeSpan = TimeSpan.FromSeconds(Convert.ToInt32(stopwatch.Elapsed.TotalSeconds));
+                Console.Write(timeSpan.ToString("c"));
+                Console.Write("\r");
+
+                await Task.Delay(1000);
+            }
+        });
+
+
+        using var producer = new ProducerBuilder<Null, string>(config).Build();
+
+        var message = new Message<Null, string>() { Value = $"Message retry" };
+        var result = await producer.ProduceAsync(topicName, message);
+
+        foreach (var property in result.GetType().GetProperties())
+        {
+            Console.WriteLine($"{property.Name} : {property.GetValue(result)}");
+        }
+
+        Console.WriteLine("----------------------------------------");
+        await Task.Delay(150);
     }
 }

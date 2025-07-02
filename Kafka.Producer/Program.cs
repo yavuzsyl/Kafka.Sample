@@ -45,6 +45,11 @@ var kafkaService = new KafkaService();
 //var topicName = "retention-topic-2";
 //await kafkaService.CreateTopicWithRetentionAsync(topicName, partitionsCount: 2);
 
-var topicName = "cluster-topic-5";
-await kafkaService.CreateTopicWithClusterAsync(topicName);
-await kafkaService.SendMessageToClusterTopicAsync(topicName);
+//var topicName = "cluster-topic-5";
+//await kafkaService.CreateTopicWithClusterAsync(topicName);
+//await kafkaService.SendMessageToClusterTopicAsync(topicName);
+
+
+var topicName = "retry-topic-3";
+//await kafkaService.CreateTopicWithRetryAndClusterAsync(topicName);
+await kafkaService.SendMessageWithRetryToClusterTopicAsync(topicName);
