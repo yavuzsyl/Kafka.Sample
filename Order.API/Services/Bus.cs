@@ -1,6 +1,6 @@
 ﻿using Confluent.Kafka;
 using Confluent.Kafka.Admin;
-using Shared.Events;
+using Shared.Events.Serializers;
 
 namespace Order.API.Services;
 

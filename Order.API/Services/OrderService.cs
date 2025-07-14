@@ -1,5 +1,6 @@
 ﻿using Order.API.Dtos;
 using Shared.Events;
+using Shared.Events.Events;
 
 namespace Order.API.Services
 {

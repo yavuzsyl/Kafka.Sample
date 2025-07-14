@@ -2,7 +2,7 @@
 using System.Text;
 using System.Text.Json;
 
-namespace Shared.Events;
+namespace Shared.Events.Serializers;
 
 public class CustomValueSerializer<T> : ISerializer<T>
 {
