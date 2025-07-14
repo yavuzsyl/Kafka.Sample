@@ -11,7 +11,7 @@ namespace Order.API.Services
 
             var orderCode = Guid.NewGuid().ToString();
             var orderCreatedEvent = new OrderCreatedEvent(orderCode,
-                userId: "1", totalPrice: 100);
+                userId: request.UserId, totalPrice: request.TotalPrice);
 
             return await bus.Publish(orderCode, orderCreatedEvent, BusConstants.OrderCreatedEventTopicName);
         }

@@ -1,5 +1,6 @@
 using Order.API.Services;
 using Scalar.AspNetCore;
+using Shared.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +16,9 @@ builder.Services.AddScoped<OrderService>();
 
 var app = builder.Build();
 
-
+using var scope = app.Services.CreateScope();
+var bus = scope.ServiceProvider.GetRequiredService<IBus>();
+await bus.CreateTopic([BusConstants.OrderCreatedEventTopicName]);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
